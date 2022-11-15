@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-bucket
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /BUCKET_NAME/$1
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/upstream-vhost: "storage.googleapis.com"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "$NGINX_INGRESS_IP.nip.io"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /bucket/(.*)$
+        backend:
+          service:
+            name: google-storage-buckets
+            port:
+              number: 443
+
+
